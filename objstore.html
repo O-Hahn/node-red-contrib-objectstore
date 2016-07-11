@@ -1,0 +1,101 @@
+<!--
+  Copyright 2016 IBM Corp.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author: Olaf Hahn
+-->
+
+<!--  Object Storage Put Node   -->
+<script type="text/x-red" data-template-name="os-put">
+    <div class="form-row">
+        <label for="node-input-osconfig"><i class="fa fa-tasks"></i> Object Storage Service</label>
+        <input type="text" id="node-input-osconfig">
+    </div>
+    <div class="form-row">
+        <label for="node-input-filename"><i class="fa fa-fileo"></i> Filename</label>
+        <input type="text" id="node-input-filename" placeholder="Filename">
+    </div>
+    <div class="form-row">
+        <label for="node-input-container"><i class="fa fa-folder-open-o"></i> Container</label>
+        <input type="text" id="node-input-container" placeholder="Container">
+    </div>
+
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+
+<!-- Next, some simple help text is provided for the node.                   -->
+<script type="text/x-red" data-help-name="os-put">
+   <p>Simple sample input node. Just sends a single message when it starts up.
+   This is not very useful.</p>
+   <p>Outputs an object called <code>msg</code> containing <code>msg.topic</code> and
+   <code>msg.payload</code>. msg.payload is a String.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('os-put',{
+        category: 'storage',     
+        defaults: {             
+            name: {value:""},
+            container: {value:"", required:true},
+            filename: {value:"", required:true},
+            osconfig: {value:"", type:"os-config", required:true}
+        },
+        inputs:1,               
+        outputs:1, 
+        icon: "cloud1.png",    
+		label: function() {   
+            return this.region + ":" + (this.name || "object storage put");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+<!--  Object Storage Put Node   -->
+
+
+
+<!--  Object Storage Config Node -->
+<script type="text/x-red" data-template-name="os-config">
+    <div class="form-row">
+        <label for="node-config-input-region"><i class="icon-bookmark"></i> Region</label>
+        <select id="node-config-input-region">
+            <option value="dallas">Dallas</option>
+            <option value="london">London</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-bookmark"></i> Name</label>
+        <input type="text" id="node-config-input-name">
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('os-config',{
+        category: 'config',
+        defaults: {
+            region: {value:"dallas",required:true},
+            name: {value:"",required:true}
+        },
+        label: function() {
+            return this.name;
+        }
+    });
+</script>
+<!--  Object Storage Config Node -->

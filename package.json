@@ -1,0 +1,39 @@
+{
+  "name": "node-red-contrib-objectstore",
+  "version": "0.0.1",
+  "description": "Node-Red Nodes for IBM Bluemix Object Storage service.",
+  "main": "objstore.js",
+  "repository": {
+    "type": "git",
+  	"url": "git@github.com:O-Hahn/node-red-contrib-objectstore"
+  },
+  "keywords": [
+    "ibm",
+    "node-red",
+    "bluemix",
+    "object",
+    "storage",
+    "openstack",
+    "object storage"
+  ],
+  "author": {
+     	"name": "Olaf Hahn",
+     	"email": "olaf@fam-hahn.com"
+  },
+  "license": "Apache-2.0",
+       "node-red" : {
+        "nodes": {
+            "objstore": "objstore.js"
+        	}
+    },
+  "bugs": {
+    "url": "https://github.com/O-Hahn/node-red-contrib-objectstore/issues"
+  },
+  "dependencies": {
+    "bluebird": "^3.3.3",
+    "is-utf8": "latest",
+    "fs": "latest",
+    "fs-extra": "latest",
+    "node-uuid": "latest"
+  }
+}
