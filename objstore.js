@@ -19,8 +19,8 @@
 
 module.exports = function(RED) {
     "use strict";
-    // require any external libraries we may need....
-    //var foo = require("foo-library");
+
+    // require any external libraries ....
 
     // Object Storage Put Node - Main Function
     function ObjectStoragePutNode(n) {
@@ -29,31 +29,159 @@ module.exports = function(RED) {
 
         // Store local copies of the node configuration (as defined in the .html)
         this.filename = n.filename;
+        this.fileformat = n.fileformat;
+        this.objectmode = n.objectmode;
+        this.objectname = n.objectname;
         this.container = n.container;
         this.name = n.name;
 
         // Retrieve the Object Storage config node
         this.osconfig = RED.nodes.getNode(n.osconfig);
 
-        if (this.osconfig) {
-            // Do something with:
-        	console.log('ObjectStorage Put (log):', this.osconfig);
-        } else {
-            // No config node configured
-        }
-
         // copy "this" object in case we need it in context of callbacks of other functions.
         var node = this;
 
+        // Check if the Config to the Service is given 
+        if (this.osconfig) {
+            // Do something with:
+        	console.log('ObjectStorage Put (log):', this.osconfig);
+         	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+        } else {
+            // No config node configured
+	        node.status({fill:"red",shape:"ring",text:"error"});
+	        node.error('Object Storage Put (err): No object stroage configuration found!')
+	        return;
+        }
+
         // Do whatever you need to do in here - declare callbacks etc
-        var msg = {};
-        msg.topic = this.topic;
-        msg.payload = "Hello world !"
+        // var msg = {};
+        // msg.topic = this.topic;
+        // msg.payload = "Hello world !"
 
         // respond to inputs....
         this.on('input', function (msg) {
-            node.warn("I saw a payload: "+msg.payload);
-            // in this example just send it straight on... should process it here really
+         	// Local Vars and Modules
+         	var fsextra = require("fs-extra");
+         	var fs = require("fs");
+         	var localdir = __dirname;
+        	var uuid = require('node-uuid').v4();
+
+         	var filemode;
+			var filename;
+			var filepath;
+			var fileformat;
+			var objectname; 
+			var filefqn;
+			var container;
+
+			// Set the status to green
+         	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+         	
+			// Check Filemode
+         	if ((msg.filemode) && (msg.filemode.trim() !== "")) {
+         		filemode = msg.filemode;
+         	} else {
+         		if (node.filemode) {
+         			filemode = node.filemode;
+         		} else {
+         			filemode = "1";
+         		}
+         	}
+
+         	// Check Filename
+         	if ((msg.filename) && (msg.filename.trim() !== "")) {
+         		filename = msg.filename;
+         	} else {
+         		if (node.filename) {
+         			filename = node.filename;
+         		} else {
+         			filename = "pic_" + uuid;
+         		}
+         	}
+
+			// Check filepath
+         	if ((msg.filepath) && (msg.filepath.trim() !== "")) {
+         		filepath = msg.filepath;
+         	} else {
+         		if (node.filepath) {
+         			filepath = node.filepath;
+         		} else {
+         			filepath = localdir;
+         		}
+         	}
+
+         	// Check fileformat
+         	if ((msg.fileformat) && (msg.fileformat.trim() !== "")) {
+         		fileformat = msg.fileformat;
+         	} else {
+         		if (node.fileformat) {
+         			fileformat = node.fileformat;
+         		} else {
+         			fileformat = "jpeg";
+         		}
+         	}
+
+         	// Set FQN for this file
+     		filefqn = filepath + filename;
+
+         	// Check objectmode
+         	if ((msg.objectmode) && (msg.objectmode.trim() !== "")) {
+         		objectmode = msg.objectmode;
+         	} else {
+         		if (node.objectmode) {
+         			objectmode = node.objectmode;
+         		} 
+         	}
+         	
+         	// Check objectname and define against objectmode
+         	if (objectmode == "0") {
+     			objectname = filename;
+         	} else if (objectmode == "1") {
+     			objectname = "pic_" + uuid;         		         		
+         	} else {
+             	if ((msg.objectname) && (msg.objectname.trim() !== "")) {
+             		objectname = msg.objectname;
+             	} else {
+             		if (node.objectname) {
+             			objectname = node.objectname;
+             		} else {
+             			objectname = "pic_" + uuid;
+             		}
+             	}
+         	}
+
+ 			// Check container
+         	if ((msg.container) && (msg.container.trim() !== "")) {
+         		container = msg.container;
+         	} else {
+         		if (node.container) {
+         			container = node.container;
+         		} else {
+         			container = "Pictures";
+         		}
+         	}
+
+         	// Filemode is buffermode or filebased
+	        if (filemode == "0") {
+	        	// Upload from File 
+		        var readStream = fs.createReadStream(filefqn);
+
+		        // get Filesize
+		        var stats = fs.statSync(filefqn);
+		        var fileSizeInBytes = stats["size"];
+
+		        // console log
+		        console.log('objstore store put (log): write - ', filefqn);
+		    } else {
+	        	 // store the obj directly from msg.payload
+	        	 var buf = new Buffer(msg.payload, "binary");	 
+	        
+	        }
+	        
+ 			// Logout 
+			node.log("I saw a payload: "+msg.payload);
+           
+            // Send the output back 
             node.send(msg);
         });
 
@@ -73,6 +201,10 @@ module.exports = function(RED) {
 
 		// Store local copies of the node configuration (as defined in the .html)
 		this.region = n.region;
+		this.userId = n.userId;
+		this.tendantId = n.tendantId;
+		this.userName = n.userName;
+		this.password = n.password;		
 		this.name = n.name;
 	}
 	RED.nodes.registerType("os-config",ObjectStorageConfigNode);

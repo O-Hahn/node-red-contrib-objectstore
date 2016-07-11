@@ -22,9 +22,46 @@
         <label for="node-input-osconfig"><i class="fa fa-tasks"></i> Object Storage Service</label>
         <input type="text" id="node-input-osconfig">
     </div>
+    <div id="objectmode" class="form-row">
+        <label for="node-input-filemode"><i class="fa fa-fileo"></i> File Mode</label>
+        <select id="node-input-filemode">
+            <option value="0">Filebased</option>
+            <option value="1">Buffer</option>
+        </select>
+    </div>
     <div class="form-row">
         <label for="node-input-filename"><i class="fa fa-fileo"></i> Filename</label>
-        <input type="text" id="node-input-filename" placeholder="Filename">
+        <input type="text" id="node-input-filename" placeholder="Filename with extension">
+    </div>
+    <div class="form-row">
+        <label for="node-input-filepath"><i class="fa fa-fileo"></i> Filepath</label>
+        <input type="text" id="node-input-filepath" placeholder="Path to File">
+    </div>
+    <div id="fileformat" class="form-row node-input-fileformat">
+		<label for="node-input-fileformat"><i class="fa fa-file-image-o"></i> </label>
+		<select id="node-input-fileformat">
+			<option value="jpeg">JPEG</option>
+			<option value="png">PNG</option>
+			<option value="gif">GIF</option>
+			<option value="bmp">BMP</option>
+			<option value="yuv">YUV</option>
+			<option value="rgb">RGB</option>
+			<option value="rgba">RGBA</option>
+			<option value="bgr">BGR</option>
+			<option value="bgra">BGRA</option>
+        </select>
+    </div>
+    <div id="objectmode" class="form-row">
+        <label for="node-input-objectmode"><i class="fa fa-fileo"></i> Object Name Mode</label>
+        <select id="node-input-objectmode">
+            <option value="0">Take Filename</option>
+            <option value="1">Generate New</option>
+            <option value="2">Specify</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-objectname"><i class="fa fa-fileo"></i> Object Name</label>
+        <input type="text" id="node-input-objectname" placeholder="Name of the Object in the Store">
     </div>
     <div class="form-row">
         <label for="node-input-container"><i class="fa fa-folder-open-o"></i> Container</label>
@@ -53,14 +90,31 @@
         defaults: {             
             name: {value:""},
             container: {value:"", required:true},
+            objectname: {value:"", required:false},
+            objectmode: {value:"0", required:true},
+            fileformat: {value:"jpeg", required:true},
+            filepath: {value:"", required:true},
             filename: {value:"", required:true},
+            filemode: {value:"0", required:true},
             osconfig: {value:"", type:"os-config", required:true}
         },
         inputs:1,               
         outputs:1, 
-        icon: "cloud1.png",    
+        icon: "cloud2.png",
+        colour: "#A6BBCF",
+        oneditprepare: function() {
+            $("#node-input-objectmode").change(function() {
+                var choose = $("#node-input-objectmode").val();
+                console.log(choose);
+                if (choose == "2") {
+                	$("#objectname").show();
+                } else {
+                	$("#objectname").hide();
+                }
+            });
+        },
 		label: function() {   
-            return this.region + ":" + (this.name || "object storage put");
+            return this.name || "object storage put";
         },
         labelStyle: function() {
             return this.name?"node_label_italic":"";
@@ -74,14 +128,30 @@
 <!--  Object Storage Config Node -->
 <script type="text/x-red" data-template-name="os-config">
     <div class="form-row">
-        <label for="node-config-input-region"><i class="icon-bookmark"></i> Region</label>
+        <label for="node-config-input-region"><i class="fa fa-globe"></i> Region</label>
         <select id="node-config-input-region">
             <option value="dallas">Dallas</option>
             <option value="london">London</option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-config-input-name"><i class="icon-bookmark"></i> Name</label>
+        <label for="node-config-input-tendantId"><i class="fa fa-users"></i> Tendant Id</label>
+        <input type="text" id="node-config-input-tendantId">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-userId"><i class="fa fa-user-secret"></i> User Id</label>
+        <input type="text" id="node-config-input-userId">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-userName"><i class="fa fa-user-secret"></i> User Name</label>
+        <input type="text" id="node-config-input-userName">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-key"></i> Password</label>
+        <input type="text" id="node-config-input-password">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-config-input-name">
     </div>
 </script>
@@ -91,10 +161,14 @@
         category: 'config',
         defaults: {
             region: {value:"dallas",required:true},
+            tendantId: {value:"",required:true},
+            userId: {value:"",required:true},
+            userName: {value:"",required:true},
+            password: {value:"",required:true},
             name: {value:"",required:true}
         },
         label: function() {
-            return this.name;
+            return this.region + ":" + (this.name || "object storage config");
         }
     });
 </script>
