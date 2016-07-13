@@ -22,18 +22,18 @@
         <label for="node-input-osconfig"><i class="fa fa-tasks"></i> Object Storage Service</label>
         <input type="text" id="node-input-osconfig">
     </div>
-    <div id="objectmode" class="form-row">
+    <div id="filemode" class="form-row">
         <label for="node-input-filemode"><i class="fa fa-fileo"></i> File Mode</label>
         <select id="node-input-filemode">
             <option value="0">Filebased</option>
             <option value="1">Buffer</option>
         </select>
     </div>
-    <div class="form-row">
+    <div id="filename" class="form-row">
         <label for="node-input-filename"><i class="fa fa-fileo"></i> Filename</label>
         <input type="text" id="node-input-filename" placeholder="Filename with extension">
     </div>
-    <div class="form-row">
+    <div id="filepath" class="form-row">
         <label for="node-input-filepath"><i class="fa fa-fileo"></i> Filepath</label>
         <input type="text" id="node-input-filepath" placeholder="Path to File">
     </div>
@@ -59,7 +59,7 @@
             <option value="2">Specify</option>
         </select>
     </div>
-    <div class="form-row">
+    <div id="objectname" class="form-row">
         <label for="node-input-objectname"><i class="fa fa-fileo"></i> Object Name</label>
         <input type="text" id="node-input-objectname" placeholder="Name of the Object in the Store">
     </div>
@@ -100,9 +100,20 @@
         },
         inputs:1,               
         outputs:1, 
-        icon: "cloud2.png",
-        colour: "#A6BBCF",
+        icon: "cloud1_20x20.png",
+        color: "#A6BBCF",
         oneditprepare: function() {
+            $("#node-input-filemode").change(function() {
+                var choose = $("#node-input-filemode").val();
+                console.log(choose);
+                if (choose == "0") {
+                	$("#filename").show();
+                	$("#filepath").show();
+                } else {
+                	$("#filename").hide();
+                	$("#filepath").hide();
+                }
+            });
             $("#node-input-objectmode").change(function() {
                 var choose = $("#node-input-objectmode").val();
                 console.log(choose);

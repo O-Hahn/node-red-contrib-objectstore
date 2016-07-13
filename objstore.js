@@ -61,6 +61,7 @@ module.exports = function(RED) {
         // respond to inputs....
         this.on('input', function (msg) {
          	// Local Vars and Modules
+	    	var ObjectStore = require('./lib/ObjectStorage.js');
          	var fsextra = require("fs-extra");
          	var fs = require("fs");
          	var localdir = __dirname;
@@ -160,6 +161,20 @@ module.exports = function(RED) {
          			container = "Pictures";
          		}
          	}
+         	
+     		// Enable the Object Storage Service Call
+     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container);
+
+	        // Test Object Store
+	        var lst = os.listContainerFiles();
+	        lst.then(function(list) {
+        	        console.log('ObjectStorage Put (log): files:', list);
+        	        return list;
+        		})
+        		.catch(function(err) {
+        			console.error('ObjectStorage Put (err)::', err);
+        		});
+
 
          	// Filemode is buffermode or filebased
 	        if (filemode == "0") {
