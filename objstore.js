@@ -61,7 +61,7 @@ module.exports = function(RED) {
         // respond to inputs....
         this.on('input', function (msg) {
          	// Local Vars and Modules
-	    	var ObjectStore = require('./lib/ObjectStorage.js');
+	    	var ObjectStore = require('./lib/ObjectStorage');
          	var fsextra = require("fs-extra");
          	var fs = require("fs");
          	var localdir = __dirname;
