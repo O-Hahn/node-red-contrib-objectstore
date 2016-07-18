@@ -1,6 +1,10 @@
-import ExtendableError from 'es6-error';
+var util = require('util');
+var ExtendableError = require('es6-error');
 
-class AuthenticationError extends ExtendableError{
+
+function AuthenticationError (message) {
+	message = message || 'Authentification Error';
+	ExtendableError.call (this, message);
 }
 
 module.exports = AuthenticationError;

@@ -75,7 +75,10 @@ module.exports = function(RED) {
 			var filefqn;
 			var container;
 
-			// Set the status to green
+			// Help Debug
+	        console.log('ObjectStorage Put (log): Init done');
+
+	        // Set the status to green
          	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
          	
 			// Check Filemode
@@ -163,7 +166,9 @@ module.exports = function(RED) {
          	}
          	
      		// Enable the Object Storage Service Call
+	        console.log('ObjectStorage Put (log): files: before OS Storage');
      		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container);
+	        console.log('ObjectStorage Put (log): files: after OS Storage Object');
 
 	        // Test Object Store
 	        var lst = os.listContainerFiles();

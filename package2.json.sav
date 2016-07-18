@@ -3,6 +3,10 @@
   "version": "0.0.4",
   "description": "Node-Red Nodes for IBM Bluemix Object Storage service.",
   "main": "objstore.js",
+    "scripts": {
+    "compile": "babel -d lib/ src/",
+    "prepublish": "npm run compile"
+  },
   "repository": {
     "type": "git",
   	"url": "git@github.com:O-Hahn/node-red-contrib-objectstore"
@@ -31,10 +35,14 @@
   },
   "dependencies": {
     "bluebird": "^3.3.3",
-    "es6-error": "latest",
     "is-utf8": "latest",
     "fs": "latest",
     "fs-extra": "latest",
     "node-uuid": "latest"
+  },
+    "devDependencies": {
+    "babel-cli": "^6.10.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0"
   }
 }
