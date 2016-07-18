@@ -74,6 +74,7 @@ module.exports = function(RED) {
 			var objectname; 
 			var filefqn;
 			var container;
+			var objectmode;
 
 			// Help Debug
 	        console.log('ObjectStorage Put (log): Init done');
