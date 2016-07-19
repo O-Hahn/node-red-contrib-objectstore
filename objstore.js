@@ -167,19 +167,7 @@ module.exports = function(RED) {
          	}
          	
      		// Enable the Object Storage Service Call
-	        console.log('ObjectStorage Put (log): files: before OS Storage');
      		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container);
-	        console.log('ObjectStorage Put (log): files: after OS Storage Object');
-
-	        // Test Object Store
-	        var lst = os.listContainerFiles();
-	        lst.then(function(list) {
-        	        console.log('ObjectStorage Put (log): files:', list);
-        	        return list;
-        		})
-        		.catch(function(err) {
-        			console.error('ObjectStorage Put (err)::', err);
-        		});
 
 
          	// Filemode is buffermode or filebased
@@ -190,13 +178,40 @@ module.exports = function(RED) {
 		        // get Filesize
 		        var stats = fs.statSync(filefqn);
 		        var fileSizeInBytes = stats["size"];
+		        
+		        os.createContainer().then(function() {
+		        	return os.setContainerPublicReadable();
+		        })
+		        .then(function() {
+		        	return os.uploadFileToContainer(objectname, 'image/jpeg', readStream, fileSizeInBytes);
+		        })
+		        .then(function(file){
+		          console.log('url to uploaded file:', file);
+		          return os.listContainerFiles();
+		        })
+		        .then(function(files){
+		          console.log('list of files in container:', files);
+		        });
 
 		        // console log
 		        console.log('objstore store put (log): write - ', filefqn);
 		    } else {
-	        	 // store the obj directly from msg.payload
-	        	 var buf = new Buffer(msg.payload, "binary");	 
+				// store the obj directly from msg.payload
+				var buf = new Buffer(msg.payload, "binary");	 
 	        
+				os.createContainer().then(function() {
+					return os.setContainerPublicReadable();
+				})
+				.then(function() {
+					return os.uploadFileToContainer(objectname, 'image/jpeg', buf, fileSizeInBytes);
+				})
+				.then(function(file){
+				  console.log('url to uploaded file:', file);
+				  return os.listContainerFiles();
+				})
+				.then(function(files){
+				  console.log('list of files in container:', files);
+				});
 	        }
 	        
  			// Logout 
