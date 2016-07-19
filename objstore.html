@@ -22,9 +22,9 @@
         <label for="node-input-osconfig"><i class="fa fa-tasks"></i> Object Storage Service</label>
         <input type="text" id="node-input-osconfig">
     </div>
-    <div id="filemode" class="form-row">
-        <label for="node-input-filemode"><i class="fa fa-fileo"></i> File Mode</label>
-        <select id="node-input-filemode">
+    <div id="mode" class="form-row">
+        <label for="node-input-mode"><i class="fa fa-fileo"></i> Mode</label>
+        <select id="node-input-mode">
             <option value="0">Filebased</option>
             <option value="1">Buffer</option>
         </select>
@@ -95,7 +95,7 @@
             fileformat: {value:"jpeg", required:true},
             filepath: {value:"", required:true},
             filename: {value:"", required:true},
-            filemode: {value:"0", required:true},
+            mode: {value:"0", required:true},
             osconfig: {value:"", type:"os-config", required:true}
         },
         inputs:1,               
@@ -103,8 +103,8 @@
         icon: "cloud1_20x20.png",
         color: "#A6BBCF",
         oneditprepare: function() {
-            $("#node-input-filemode").change(function() {
-                var choose = $("#node-input-filemode").val();
+            $("#node-input-mode").change(function() {
+                var choose = $("#node-input-mode").val();
                 console.log(choose);
                 if (choose == "0") {
                 	$("#filename").show();

@@ -48,7 +48,7 @@ module.exports = function(RED) {
         } else {
             // No config node configured
 	        node.status({fill:"red",shape:"ring",text:"error"});
-	        node.error('Object Storage Put (err): No object stroage configuration found!')
+	        node.error('Object Storage Put (err): No object stroage configuration found!');
 	        return;
         }
 
@@ -175,9 +175,10 @@ module.exports = function(RED) {
 
 		        // get Filesize
 		        var stats = fs.statSync(filefqn);
-		        var fileSizeInBytes = stats["size"];
+		        var fileSizeInBytes = stats['size'];
 		        
-		        os.createContainer().then(function() {
+		        var sess = os.createContainer();
+		        sess.then(function() {
 		        	return os.setContainerPublicReadable();
 		        })
 		        .then(function() {
@@ -197,7 +198,8 @@ module.exports = function(RED) {
 				// store the obj directly from msg.payload
 				var buf = new Buffer(msg.payload, "binary");	 
 	        
-				os.createContainer().then(function() {
+				var sess = os.createContainer();
+				sess.then(function() {
 					return os.setContainerPublicReadable();
 				})
 				.then(function() {
