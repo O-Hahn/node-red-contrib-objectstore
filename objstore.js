@@ -44,7 +44,6 @@ module.exports = function(RED) {
         // Check if the Config to the Service is given 
         if (this.osconfig) {
             // Do something with:
-        	console.log('ObjectStorage Put (log):', this.osconfig);
          	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
         } else {
             // No config node configured
@@ -167,8 +166,7 @@ module.exports = function(RED) {
          	}
          	
      		// Enable the Object Storage Service Call
-     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container);
-
+     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container, node.osconfig.region);
 
          	// Filemode is buffermode or filebased
 	        if (filemode == "0") {
