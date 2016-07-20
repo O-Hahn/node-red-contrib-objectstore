@@ -221,6 +221,58 @@
 </script>
 <!--  Object Storage Put Node   -->
 
+<!--  Object Storage Del Node   -->
+<script type="text/x-red" data-template-name="os-del">
+    <div class="form-row">
+        <label for="node-input-osconfig"><i class="fa fa-tasks"></i> Object Storage Service</label>
+        <input type="text" id="node-input-osconfig">
+    </div>
+    <div id="objectname" class="form-row">
+        <label for="node-input-objectname"><i class="fa fa-fileo"></i> Object Name</label>
+        <input type="text" id="node-input-objectname" placeholder="Name of the Object in the Store">
+    </div>
+    <div class="form-row">
+        <label for="node-input-container"><i class="fa fa-folder-open-o"></i> Container</label>
+        <input type="text" id="node-input-container" placeholder="Container">
+    </div>
+
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+
+<!-- Next, some simple help text is provided for the node.                   -->
+<script type="text/x-red" data-help-name="os-del">
+	<p>This <b>Object Storage Del Node</b> deletes the image from the Object Storeage Service on Bluemix. </p>
+	<p>Provide in <b>msg.objectname</b> the name of the stored object in the Object Storage Service. </p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('os-del',{
+        category: 'storage',     
+        defaults: {             
+            name: {value:""},
+            container: {value:"", required:true},
+            objectname: {value:"", required:true},
+            osconfig: {value:"", type:"os-config", required:true}
+        },
+        inputs:1,               
+        outputs:0, 
+        icon: "cloud1_20x20.png",
+        color: "#A6BBCF",
+		label: function() {   
+            return this.name || "object storage del";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+<!--  Object Storage Del Node   -->
+
 
 <!--  Object Storage Config Node -->
 <script type="text/x-red" data-template-name="os-config">

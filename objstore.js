@@ -44,7 +44,7 @@ module.exports = function(RED) {
         // Check if the Config to the Service is given 
         if (this.osconfig) {
             // Do something with:
-         	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+         	node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
         } else {
             // No config node configured
 	        node.status({fill:"red",shape:"ring",text:"error"});
@@ -169,6 +169,9 @@ module.exports = function(RED) {
 		        console.log('objstore store get (log): write into msg.payload');
 	        }
 	        
+	        // Set the node-status
+	        node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
+
 	        // Send the output back 
             node.send(msg);
         });
@@ -206,7 +209,7 @@ module.exports = function(RED) {
         // Check if the Config to the Service is given 
         if (this.osconfig) {
             // Do something with:
-         	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+         	node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
         } else {
             // No config node configured
 	        node.status({fill:"red",shape:"ring",text:"error"});
@@ -231,6 +234,7 @@ module.exports = function(RED) {
 			var filefqn;
 			var container;
 			var objectmode;
+			var mimetype;
 
 	        // Set the status to green
          	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
@@ -278,6 +282,9 @@ module.exports = function(RED) {
          			fileformat = "jpeg";
          		}
          	}
+         	
+         	// Set the right mime-format
+         	mimetype = 'image/' + fileformat;
 
          	// Set FQN for this file
      		filefqn = filepath  + filename;
@@ -336,16 +343,11 @@ module.exports = function(RED) {
 		        	return os.setContainerPublicReadable();
 		        })
 		        .then(function() {
-		        	return os.uploadFileToContainer(objectname, 'image/jpeg', readStream, fileSizeInBytes);
+		        	return os.uploadFile(objectname, mimetype, readStream, fileSizeInBytes);
 		        })
-		        .then(function(file){
-		          console.log('url to uploaded file:', file);
-		          msg.file = file;
-		          return os.listContainerFiles();
-		        })
-		        .then(function(files){
-		        	msg.files = files;
-		          console.log('list of files in container:', files);
+		        .then(function(url){
+		          console.log('objstore store put (log): Url to uploaded file:', url);
+		          msg.url = url;
 		        });
 
 		        // console log
@@ -359,22 +361,21 @@ module.exports = function(RED) {
 					return os.setContainerPublicReadable();
 				})
 				.then(function() {
-					return os.uploadFileToContainer(objectname, 'image/jpeg', buf, buf.length);
+					return os.uploadFile(objectname, mimetype, buf, buf.length);
 				})
-				.then(function(file){
-					msg.file = file;
-					console.log('url to uploaded file:', file);
-					return os.listContainerFiles();
-				})
-				.then(function(files){
-					msg.files = files;
-					console.log('list of files in container:', files);
+				.then(function(url){
+					msg.url = url;
+					console.log('objstore store put (log): Url to uploaded file:', url);
 				});
 	        }
 	        
 	        // Provide the needed Feedback
 	        msg.payload = msg.file;
 	        msg.objectname = objectname;
+	        msg.filefqn = filefqn;
+
+	        // Set the node-status
+	        node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
 	        
             // Send the output back 
             node.send(msg);
@@ -389,18 +390,112 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("os-put",ObjectStoragePutNode);
 
+    // Object Storage Del Node - Main Function
+    function ObjectStorageDelNode(n) {
+        // Create a RED node
+        RED.nodes.createNode(this,n);
+
+        // Store local copies of the node configuration (as defined in the .html)
+        this.objectname = n.objectname;
+        this.container = n.container;
+        this.name = n.name;
+
+        // Retrieve the Object Storage config node
+        this.osconfig = RED.nodes.getNode(n.osconfig);
+
+        // copy "this" object in case we need it in context of callbacks of other functions.
+        var node = this;
+
+        // Check if the Config to the Service is given 
+        if (this.osconfig) {
+            // Do something with:
+         	node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
+        } else {
+            // No config node configured
+	        node.status({fill:"red",shape:"ring",text:"error"});
+	        node.error('Object Storage Del (err): No object stroage configuration found!');
+	        return;
+        }
+
+        // respond to inputs....
+        this.on('input', function (msg) {
+         	// Local Vars and Modules
+	    	var ObjectStore = require('./lib/ObjectStorage');
+
+			var objectname; 
+			var container;
+
+	        // Set the status to green
+         	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});         	
+         	
+ 			// Check container
+         	if ((msg.container) && (msg.container.trim() !== "")) {
+         		container = msg.container;
+         	} else {
+         		if (node.container) {
+         			container = node.container;
+         		} else {
+         			container = "Pictures";
+         		}
+         	}
+         	
+     		// Enable the Object Storage Service Call
+     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container, node.osconfig.region);
+     		
+		    // Delete the file if exists    
+	        var sess = os.existsFile(objectname);
+	        sess.then(function() {
+	        	console.log('Object Storage Del (log): file exists:', objectname);
+	        	return os.deleteFile(objectname);
+	        })
+	        .then(function(res){
+	        	console.log('Object Storage Del (log): file deleted:', objectname);
+	        });
+
+         	node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
+
+         	// console log
+	        
+            // Send the output back - here no feedback
+            // node.send(msg);
+        });
+
+        // respond to close....
+        this.on("close", function() {
+            // Called when the node is shutdown - eg on redeploy.
+            // Allows ports to be closed, connections dropped etc.
+            // eg: node.client.disconnect();
+        });
+    }
+    RED.nodes.registerType("os-del",ObjectStorageDelNode);
+
     // Object Storage Config Node
 	function ObjectStorageConfigNode(n) {
         // Create a RED node
 		RED.nodes.createNode(this,n);
-
-		// Store local copies of the node configuration (as defined in the .html)
+		
+		// check the cfgtype
 		this.cfgtype = n.cfgtype;
-		this.region = n.region;
-		this.userId = n.userId;
-		this.tendantId = n.tendantId;
-		this.userName = n.userName;
-		this.password = n.password;		
+
+		if (cfgtype == 'bluemix') {
+			// get the VCAP_SERVICES
+			var vcapServices = require('./lib/vcap');
+			console.log('VCAP: ', vcapServices);
+			var osCred = vcapServices.Object-Storage.credentials;
+			
+			this.region = osCred.region;
+			this.userId = osCred.userId;
+			this.tendantId = osCred.tendantId;
+			this.userName = osCred.userName;
+			this.password = osCred.password;		
+		} else {			
+			// Store local copies of the node configuration (as defined in the .html)
+			this.region = n.region;
+			this.userId = n.userId;
+			this.tendantId = n.tendantId;
+			this.userName = n.userName;
+			this.password = n.password;		
+		}
 		this.name = n.name;
 	}
 	RED.nodes.registerType("os-config",ObjectStorageConfigNode);
