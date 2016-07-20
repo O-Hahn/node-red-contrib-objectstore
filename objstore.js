@@ -111,7 +111,7 @@ module.exports = function(RED) {
          	}
 
          	// Set FQN for this file
-     		filefqn = filepath + '/' + filename;
+     		filefqn = filepath + filename;
          	
  			// Check container
          	if ((msg.container) && (msg.container.trim() !== "")) {
@@ -280,7 +280,7 @@ module.exports = function(RED) {
          	}
 
          	// Set FQN for this file
-     		filefqn = filepath + '/' + filename;
+     		filefqn = filepath  + filename;
 
          	// Check objectmode
          	if ((msg.objectmode) && (msg.objectmode.trim() !== "")) {
@@ -321,8 +321,6 @@ module.exports = function(RED) {
          	
      		// Enable the Object Storage Service Call
      		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container, node.osconfig.region);
-
-     		var ret;
      		
          	// mode is buffermode or filebased
 	        if (mode == "0") {
@@ -342,11 +340,11 @@ module.exports = function(RED) {
 		        })
 		        .then(function(file){
 		          console.log('url to uploaded file:', file);
-		          ret.file = file;
+		          msg.file = file;
 		          return os.listContainerFiles();
 		        })
 		        .then(function(files){
-		        	ret.files = files;
+		        	msg.files = files;
 		          console.log('list of files in container:', files);
 		        });
 
@@ -364,18 +362,18 @@ module.exports = function(RED) {
 					return os.uploadFileToContainer(objectname, 'image/jpeg', buf, buf.length);
 				})
 				.then(function(file){
-					ret.file = file;
-				  console.log('url to uploaded file:', file);
-				  return os.listContainerFiles();
+					msg.file = file;
+					console.log('url to uploaded file:', file);
+					return os.listContainerFiles();
 				})
 				.then(function(files){
-					ret.files = files;
-				  console.log('list of files in container:', files);
+					msg.files = files;
+					console.log('list of files in container:', files);
 				});
 	        }
 	        
 	        // Provide the needed Feedback
-	        msg.payload = ret.file;
+	        msg.payload = msg.file;
 	        msg.objectname = objectname;
 	        
             // Send the output back 
