@@ -21,6 +21,150 @@ module.exports = function(RED) {
     "use strict";
 
     // require any external libraries ....
+    
+    // Object Storage Get Node - Main Function
+    function ObjectStorageGetNode(n) {
+        // Create a RED node
+        RED.nodes.createNode(this,n);
+
+        // Store local copies of the node configuration (as defined in the .html)
+        this.mode = n.mode;
+        this.objectname = n.objectname;
+        this.container = n.container;
+        this.filename = n.filename;
+        this.filepath = n.filepath;
+        this.name = n.name;
+
+        // Retrieve the Object Storage config node
+        this.osconfig = RED.nodes.getNode(n.osconfig);
+
+        // copy "this" object in case we need it in context of callbacks of other functions.
+        var node = this;
+
+        // Check if the Config to the Service is given 
+        if (this.osconfig) {
+            // Do something with:
+         	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+        } else {
+            // No config node configured
+	        node.status({fill:"red",shape:"ring",text:"error"});
+	        node.error('Object Storage Put (err): No object stroage configuration found!');
+	        return;
+        }
+
+        // respond to inputs....
+        this.on('input', function (msg) {
+         	// Local Vars and Modules
+	    	var ObjectStore = require('./lib/ObjectStorage');
+         	var fsextra = require("fs-extra");
+         	var fs = require("fs");
+         	var localdir = __dirname;
+        	var uuid = require('node-uuid').v4();
+
+         	var mode;
+			var filename;
+			var filepath;
+			var objectname; 
+			var filefqn;
+			var container;
+
+			// Help Debug
+	        console.log('ObjectStorage Get (log): Init done');
+
+	        // Set the status to green
+         	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+         	
+			// Check mode
+         	if ((msg.mode) && (msg.mode.trim() !== "")) {
+         		mode = msg.mode;
+         	} else {
+         		if (node.mode) {
+         			mode = node.mode;
+         		} else {
+         			mode = "1";
+         		}
+         	}
+
+         	// Check ObjectName 
+         	if ((msg.objectname) && (msg.objectname.trim() !== "")) {
+         		objectname = msg.objectname;
+         	} else {
+     			objectname = node.objectname;
+         	}
+
+         	// Check Filename
+         	if ((msg.filename) && (msg.filename.trim() !== "")) {
+         		filename = msg.filename;
+         	} else {
+     			filename = node.filename;
+         	}
+
+			// Check filepath
+         	if ((msg.filepath) && (msg.filepath.trim() !== "")) {
+         		filepath = msg.filepath;
+         	} else {
+         		if (node.filepath) {
+         			filepath = node.filepath;
+         		} else {
+         			filepath = localdir;
+         		}
+         	}
+
+         	// Set FQN for this file
+     		filefqn = filepath + '/' + filename;
+         	
+ 			// Check container
+         	if ((msg.container) && (msg.container.trim() !== "")) {
+         		container = msg.container;
+         	} else {
+         		if (node.container) {
+         			container = node.container;
+         		} else {
+         			container = "Pictures";
+         		}
+         	}
+         	
+     		// Enable the Object Storage Service Call
+     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container, node.osconfig.region);
+
+         	// mode is buffermode or filebased
+	        if (mode == "0") {
+	        	// Upload from File 
+		        var writeStream = fs.createWriteStream(filefqn);
+		        		        
+		        var sess = os.existsFile(objectname);
+		        sess.then(function(ret) {
+		        	if (ret == true) {
+		        		var getsess = os.downloadFileFromContainer(objectname);
+		        		getsess.then(function (ret) {
+		        			var body = ret.body;
+		        			body.pipe(writeStream);
+		        		});
+		        	}
+
+		        // console log
+		        console.log('objstore store get (log): write - ', filefqn);
+		    } else {
+				// store the obj directly from msg.payload
+				// var buf = new Buffer(msg.payload, "binary");	 
+	        
+	        }
+	        
+ 			// Logout 
+			node.log("I saw a payload: "+msg.payload);
+           
+            // Send the output back 
+            node.send(msg);
+        });
+
+        // respond to close....
+        this.on("close", function() {
+            // Called when the node is shutdown - eg on redeploy.
+            // Allows ports to be closed, connections dropped etc.
+            // eg: node.client.disconnect();
+        });
+    }
+    RED.nodes.registerType("os-get",ObjectStorageGetNode);
 
     // Object Storage Put Node - Main Function
     function ObjectStoragePutNode(n) {
