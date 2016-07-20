@@ -29,6 +29,7 @@ module.exports = function(RED) {
 
         // Store local copies of the node configuration (as defined in the .html)
         this.filename = n.filename;
+        this.mode = n.mode;
         this.fileformat = n.fileformat;
         this.objectmode = n.objectmode;
         this.objectname = n.objectname;
@@ -52,11 +53,6 @@ module.exports = function(RED) {
 	        return;
         }
 
-        // Do whatever you need to do in here - declare callbacks etc
-        // var msg = {};
-        // msg.topic = this.topic;
-        // msg.payload = "Hello world !"
-
         // respond to inputs....
         this.on('input', function (msg) {
          	// Local Vars and Modules
@@ -66,7 +62,7 @@ module.exports = function(RED) {
          	var localdir = __dirname;
         	var uuid = require('node-uuid').v4();
 
-         	var filemode;
+         	var mode;
 			var filename;
 			var filepath;
 			var fileformat;
@@ -81,14 +77,14 @@ module.exports = function(RED) {
 	        // Set the status to green
          	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
          	
-			// Check Filemode
-         	if ((msg.filemode) && (msg.filemode.trim() !== "")) {
-         		filemode = msg.filemode;
+			// Check mode
+         	if ((msg.mode) && (msg.mode.trim() !== "")) {
+         		mode = msg.mode;
          	} else {
-         		if (node.filemode) {
-         			filemode = node.filemode;
+         		if (node.mode) {
+         			mode = node.mode;
          		} else {
-         			filemode = "1";
+         			mode = "0";
          		}
          	}
 
@@ -168,8 +164,8 @@ module.exports = function(RED) {
      		// Enable the Object Storage Service Call
      		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container, node.osconfig.region);
 
-         	// Filemode is buffermode or filebased
-	        if (filemode == "0") {
+         	// mode is buffermode or filebased
+	        if (mode == "0") {
 	        	// Upload from File 
 		        var readStream = fs.createReadStream(filefqn);
 
@@ -236,6 +232,7 @@ module.exports = function(RED) {
 		RED.nodes.createNode(this,n);
 
 		// Store local copies of the node configuration (as defined in the .html)
+		this.cfgtype = n.cfgtype;
 		this.region = n.region;
 		this.userId = n.userId;
 		this.tendantId = n.tendantId;

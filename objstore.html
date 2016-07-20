@@ -139,31 +139,38 @@
 <!--  Object Storage Config Node -->
 <script type="text/x-red" data-template-name="os-config">
     <div class="form-row">
+        <label for="node-config-input-cfgtype"><i class="fa fa-globe"></i> Configuration Information</label>
+        <select id="node-config-input-cfgtype">
+            <option value="api">API Based</option>
+            <option value="bluemix">Bluemix Service</option>
+        </select>
+    </div>
+    <div id="region" class="form-row">
         <label for="node-config-input-region"><i class="fa fa-globe"></i> Region</label>
         <select id="node-config-input-region">
             <option value="dallas">Dallas</option>
             <option value="london">London</option>
         </select>
     </div>
-    <div class="form-row">
+    <div id="tendantId" class="form-row">
         <label for="node-config-input-tendantId"><i class="fa fa-users"></i> Tendant Id</label>
-        <input type="text" id="node-config-input-tendantId">
+        <input type="text" id="node-config-input-tendantId" placeholder="TendantId">
     </div>
-    <div class="form-row">
+    <div id="userId" class="form-row">
         <label for="node-config-input-userId"><i class="fa fa-user-secret"></i> User Id</label>
-        <input type="text" id="node-config-input-userId">
+        <input type="text" id="node-config-input-userId" placeholder="UserId">
     </div>
-    <div class="form-row">
+    <div id="userName" class="form-row">
         <label for="node-config-input-userName"><i class="fa fa-user-secret"></i> User Name</label>
-        <input type="text" id="node-config-input-userName">
+        <input type="text" id="node-config-input-userName" placeholder="UserName">
     </div>
-    <div class="form-row">
+    <div id="password" class="form-row">
         <label for="node-config-input-password"><i class="fa fa-key"></i> Password</label>
-        <input type="text" id="node-config-input-password">
+        <input type="text" id="node-config-input-password" placeholder="Password">
     </div>
     <div class="form-row">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-config-input-name">
+        <input type="text" id="node-config-input-name" placeholder="Name">
     </div>
 </script>
 
@@ -171,12 +178,32 @@
     RED.nodes.registerType('os-config',{
         category: 'config',
         defaults: {
+            cfgtype: {value:"api",required:true},
             region: {value:"dallas",required:true},
             tendantId: {value:"",required:true},
             userId: {value:"",required:true},
             userName: {value:"",required:true},
             password: {value:"",required:true},
             name: {value:"",required:true}
+        },
+        oneditprepare: function() {
+            $("#node-config-input-cfgtype").change(function() {
+                var choose = $("#node-config-input-cfgtype").val();
+                console.log(choose);
+                if (choose == "api") {
+                	$("#region").show();
+                	$("#tendantId").show();
+                	$("#userId").show();
+                	$("#userName").show();
+                	$("#password").show();
+                } else {
+                	$("#region").hide();
+                	$("#tendantId").hide();
+                	$("#userId").hide();
+                	$("#userName").hide();
+                	$("#password").hide();
+                }
+            });
         },
         label: function() {
             return this.region + ":" + (this.name || "object storage config");
