@@ -331,38 +331,27 @@ module.exports = function(RED) {
      		
          	// mode is buffermode or filebased
 	        if (mode == "0") {
-	        	// check if file exists
-	            var fileExists = fs.readFile( filefqn, function( err, data ) {
-	            	if(err) {
-	            		if( err.code === 'ENOENT') { return false; }
-	            		if( err.code === 'EACCES' ) { return false; }
-	            	}
-        	      return true;
-	            } );
+	        	// Upload from File 
+		        var readStream = fs.createReadStream(filefqn);
+		        
+		        // get Filesize
+		        var stats = fs.statSync(filefqn);
+		        var fileSizeInBytes = stats['size'];
+		        
+		        var sess = os.createContainer();
+		        sess.then(function() {
+		        	return os.setContainerPublicReadable();
+		        })
+		        .then(function() {
+		        	return os.uploadFile(objectname, mimetype, readStream, fileSizeInBytes);
+		        })
+		        .then(function(url){
+		          console.log('objstore store put (log): Url to uploaded file:', url);
+		          msg.url = url;
+		        });
 
-	            if (fileExists) {	            	
-		        	// Upload from File 
-			        var readStream = fs.createReadStream(filefqn);
-			        
-			        // get Filesize
-			        var stats = fs.statSync(filefqn);
-			        var fileSizeInBytes = stats['size'];
-			        
-			        var sess = os.createContainer();
-			        sess.then(function() {
-			        	return os.setContainerPublicReadable();
-			        })
-			        .then(function() {
-			        	return os.uploadFile(objectname, mimetype, readStream, fileSizeInBytes);
-			        })
-			        .then(function(url){
-			          console.log('objstore store put (log): Url to uploaded file:', url);
-			          msg.url = url;
-			        });
-
-			        // console log
+		        // console log
 			        console.log('objstore store put (log): write - ', filefqn);
-	            }
 		    } else {
 				// store the obj directly from msg.payload
 				var buf = new Buffer(msg.payload, "binary");	 
