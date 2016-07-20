@@ -129,30 +129,45 @@ module.exports = function(RED) {
 
          	// mode is buffermode or filebased
 	        if (mode == "0") {
-	        	// Upload from File 
-		        var writeStream = fs.createWriteStream(filefqn);
-		        		        
+	        	// If File exists with objectname - write to file the content 
 		        var sess = os.existsFile(objectname);
 		        sess.then(function(ret) {
 		        	if (ret === true) {
 		        		var getsess = os.downloadFileFromContainer(objectname);
 		        		getsess.then(function (ret) {
-		        			var body = ret.body;
-		        			body.pipe(writeStream);
+		    	        	// Download into new File 
+		    		        var opt = {
+		    		        		encoding : null
+		    		        };
+		    		        fs.writeFileSync(filefqn, ret.body, opt);
+		    		        msg.payload = filefqn;
+		    		        msg.objectname = objectname;
 		        		});
 		        	}
 		        });
+		        
 		        // console log
-		        console.log('objstore store get (log): write - ', filefqn);
+		        console.log('objstore store get (log): write into file - ', filefqn);
 		    } else {
 				// store the obj directly from msg.payload
 				// var buf = new Buffer(msg.payload, "binary");	 
 	        
+	        	// If File exists with objectname - write to file the content 
+		        var sess = os.existsFile(objectname);
+		        sess.then(function(ret) {
+		        	if (ret === true) {
+		        		var getsess = os.downloadFileFromContainer(objectname);
+		        		getsess.then(function (ret) {
+		        			msg.objectname = objectname;
+		    		        msg.payload = ret.body;
+		        		});
+		        	}
+		        });
+		        
+		        // console log
+		        console.log('objstore store get (log): write into msg.payload');
 	        }
 	        
- 			// Logout 
-			node.log("I saw a payload: "+msg.payload);
-           
             // Send the output back 
             node.send(msg);
         });
@@ -215,9 +230,6 @@ module.exports = function(RED) {
 			var filefqn;
 			var container;
 			var objectmode;
-
-			// Help Debug
-	        console.log('ObjectStorage Put (log): Init done');
 
 	        // Set the status to green
          	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
@@ -344,7 +356,7 @@ module.exports = function(RED) {
 					return os.setContainerPublicReadable();
 				})
 				.then(function() {
-					return os.uploadFileToContainer(objectname, 'image/jpeg', buf, fileSizeInBytes);
+					return os.uploadFileToContainer(objectname, 'image/jpeg', buf, buf.length);
 				})
 				.then(function(file){
 				  console.log('url to uploaded file:', file);
