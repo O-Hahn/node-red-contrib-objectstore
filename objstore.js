@@ -131,15 +131,15 @@ module.exports = function(RED) {
 	        if (mode == "0") {
 	        	// If File exists with objectname - write to file the content 
 		        var sess = os.existsFile(objectname);
-		        sess.then(function(ret) {
-		        	if (ret === true) {
+		        sess.then(function(r) {
+		        	if (r === true) {
 		        		var getsess = os.downloadFileFromContainer(objectname);
-		        		getsess.then(function (ret) {
+		        		getsess.then(function (r) {
 		    	        	// Download into new File 
 		    		        var opt = {
 		    		        		encoding : null
 		    		        };
-		    		        fs.writeFileSync(filefqn, ret.body, opt);
+		    		        fs.writeFileSync(filefqn, r.body, opt);
 		    		        msg.payload = filefqn;
 		    		        msg.objectname = objectname;
 		        		});
@@ -154,12 +154,13 @@ module.exports = function(RED) {
 	        
 	        	// If File exists with objectname - write to file the content 
 		        var sess = os.existsFile(objectname);
-		        sess.then(function(ret) {
+		        sess.then(function(r) {
 		        	if (ret === true) {
 		        		var getsess = os.downloadFileFromContainer(objectname);
-		        		getsess.then(function (ret) {
+		        		getsess.then(function (r) {
 		        			msg.objectname = objectname;
-		    		        msg.payload = ret.body;
+		    		        msg.payload = r.body;
+		    		        console.log('objectstore get (log): object loaded');
 		        		});
 		        	}
 		        });
@@ -168,7 +169,7 @@ module.exports = function(RED) {
 		        console.log('objstore store get (log): write into msg.payload');
 	        }
 	        
-            // Send the output back 
+	        // Send the output back 
             node.send(msg);
         });
 
@@ -321,6 +322,8 @@ module.exports = function(RED) {
      		// Enable the Object Storage Service Call
      		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container, node.osconfig.region);
 
+     		var ret;
+     		
          	// mode is buffermode or filebased
 	        if (mode == "0") {
 	        	// Upload from File 
@@ -339,9 +342,11 @@ module.exports = function(RED) {
 		        })
 		        .then(function(file){
 		          console.log('url to uploaded file:', file);
+		          ret.file = file;
 		          return os.listContainerFiles();
 		        })
 		        .then(function(files){
+		        	ret.files = files;
 		          console.log('list of files in container:', files);
 		        });
 
@@ -359,17 +364,20 @@ module.exports = function(RED) {
 					return os.uploadFileToContainer(objectname, 'image/jpeg', buf, buf.length);
 				})
 				.then(function(file){
+					ret.file = file;
 				  console.log('url to uploaded file:', file);
 				  return os.listContainerFiles();
 				})
 				.then(function(files){
+					ret.files = files;
 				  console.log('list of files in container:', files);
 				});
 	        }
 	        
- 			// Logout 
-			node.log("I saw a payload: "+msg.payload);
-           
+	        // Provide the needed Feedback
+	        msg.payload = ret.file;
+	        msg.objectname = objectname;
+	        
             // Send the output back 
             node.send(msg);
         });
@@ -398,4 +406,4 @@ module.exports = function(RED) {
 		this.name = n.name;
 	}
 	RED.nodes.registerType("os-config",ObjectStorageConfigNode);
-}
+};
