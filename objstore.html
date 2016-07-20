@@ -16,6 +16,92 @@
   Author: Olaf Hahn
 -->
 
+<!--  Object Storage Get Node   -->
+<script type="text/x-red" data-template-name="os-get">
+    <div class="form-row">
+        <label for="node-input-osconfig"><i class="fa fa-tasks"></i> Object Storage Service</label>
+        <input type="text" id="node-input-osconfig">
+    </div>
+    <div id="objectname" class="form-row">
+        <label for="node-input-objectname"><i class="fa fa-fileo"></i> Object Name</label>
+        <input type="text" id="node-input-objectname" placeholder="Name of the Object in the Store">
+    </div>
+    <div class="form-row">
+        <label for="node-input-container"><i class="fa fa-folder-open-o"></i> Container</label>
+        <input type="text" id="node-input-container" placeholder="Container">
+    </div>
+    <div id="mode" class="form-row">
+        <label for="node-input-mode"><i class="fa fa-fileo"></i> Mode</label>
+        <select id="node-input-mode">
+            <option value="0">Filebased</option>
+            <option value="1">Buffer</option>
+        </select>
+    </div>
+    <div id="filename" class="form-row">
+        <label for="node-input-filename"><i class="fa fa-fileo"></i> Filename</label>
+        <input type="text" id="node-input-filename" placeholder="Filename with extension">
+    </div>
+    <div id="filepath" class="form-row">
+        <label for="node-input-filepath"><i class="fa fa-fileo"></i> Filepath</label>
+        <input type="text" id="node-input-filepath" placeholder="Path to File">
+    </div>
+
+    <br/>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+
+<!-- Next, some simple help text is provided for the node.                   -->
+<script type="text/x-red" data-help-name="os-get">
+   <p>Simple sample input node. Just sends a single message when it starts up.
+   This is not very useful.</p>
+   <p>Outputs an object called <code>msg</code> containing <code>msg.topic</code> and
+   <code>msg.payload</code>. msg.payload is a String.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('os-get',{
+        category: 'storage',     
+        defaults: {             
+            name: {value:""},
+            container: {value:"", required:true},
+            objectname: {value:"", required:true},
+            filepath: {value:"", required:true},
+            filename: {value:"", required:true},
+            mode: {value:"0", required:true},
+            osconfig: {value:"", type:"os-config", required:true}
+        },
+        inputs:1,               
+        outputs:1, 
+        icon: "cloud1_20x20.png",
+        color: "#A6BBCF",
+        oneditprepare: function() {
+            $("#node-input-mode").change(function() {
+                var choose = $("#node-input-mode").val();
+                console.log(choose);
+                if (choose == "0") {
+                	$("#filename").show();
+                	$("#filepath").show();
+                } else {
+                	$("#filename").hide();
+                	$("#filepath").hide();
+                }
+            });
+        },
+		label: function() {   
+            return this.name || "object storage get";
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        }
+    });
+</script>
+<!--  Object Storage Get Node   -->
+
+
 <!--  Object Storage Put Node   -->
 <script type="text/x-red" data-template-name="os-put">
     <div class="form-row">
@@ -133,100 +219,6 @@
     });
 </script>
 <!--  Object Storage Put Node   -->
-
-<!--  Object Storage Get Node   -->
-<script type="text/x-red" data-template-name="os-get">
-    <div class="form-row">
-        <label for="node-input-osconfig"><i class="fa fa-tasks"></i> Object Storage Service</label>
-        <input type="text" id="node-input-osconfig">
-    </div>
-    <div id="objectname" class="form-row">
-        <label for="node-input-objectname"><i class="fa fa-fileo"></i> Object Name</label>
-        <input type="text" id="node-input-objectname" placeholder="Name of the Object in the Store">
-    </div>
-    <div class="form-row">
-        <label for="node-input-container"><i class="fa fa-folder-open-o"></i> Container</label>
-        <input type="text" id="node-input-container" placeholder="Container">
-    </div>
-    <div id="mode" class="form-row">
-        <label for="node-input-mode"><i class="fa fa-fileo"></i> Mode</label>
-        <select id="node-input-mode">
-            <option value="0">Filebased</option>
-            <option value="1">Buffer</option>
-        </select>
-    </div>
-    <div id="filename" class="form-row">
-        <label for="node-input-filename"><i class="fa fa-fileo"></i> Filename</label>
-        <input type="text" id="node-input-filename" placeholder="Filename with extension">
-    </div>
-    <div id="filepath" class="form-row">
-        <label for="node-input-filepath"><i class="fa fa-fileo"></i> Filepath</label>
-        <input type="text" id="node-input-filepath" placeholder="Path to File">
-    </div>
-
-    <br/>
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-</script>
-
-
-<!-- Next, some simple help text is provided for the node.                   -->
-<script type="text/x-red" data-help-name="os-get">
-   <p>Simple sample input node. Just sends a single message when it starts up.
-   This is not very useful.</p>
-   <p>Outputs an object called <code>msg</code> containing <code>msg.topic</code> and
-   <code>msg.payload</code>. msg.payload is a String.</p>
-</script>
-
-<script type="text/javascript">
-    RED.nodes.registerType('os-get',{
-        category: 'storage',     
-        defaults: {             
-            name: {value:""},
-            container: {value:"", required:true},
-            objectname: {value:"", required:true},
-            filepath: {value:"", required:true},
-            filename: {value:"", required:true},
-            mode: {value:"0", required:true},
-            osconfig: {value:"", type:"os-config", required:true}
-        },
-        inputs:1,               
-        outputs:1, 
-        icon: "cloud1_20x20.png",
-        color: "#A6BBCF",
-        oneditprepare: function() {
-            $("#node-input-mode").change(function() {
-                var choose = $("#node-input-mode").val();
-                console.log(choose);
-                if (choose == "0") {
-                	$("#filename").show();
-                	$("#filepath").show();
-                } else {
-                	$("#filename").hide();
-                	$("#filepath").hide();
-                }
-            });
-            $("#node-input-objectmode").change(function() {
-                var choose = $("#node-input-objectmode").val();
-                console.log(choose);
-                if (choose == "2") {
-                	$("#objectname").show();
-                } else {
-                	$("#objectname").hide();
-                }
-            });
-        },
-		label: function() {   
-            return this.name || "object storage get";
-        },
-        labelStyle: function() {
-            return this.name?"node_label_italic":"";
-        }
-    });
-</script>
-<!--  Object Storage Get Node   -->
 
 
 <!--  Object Storage Config Node -->

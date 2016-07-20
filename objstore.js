@@ -134,14 +134,14 @@ module.exports = function(RED) {
 		        		        
 		        var sess = os.existsFile(objectname);
 		        sess.then(function(ret) {
-		        	if (ret == true) {
+		        	if (ret === true) {
 		        		var getsess = os.downloadFileFromContainer(objectname);
 		        		getsess.then(function (ret) {
 		        			var body = ret.body;
 		        			body.pipe(writeStream);
 		        		});
 		        	}
-
+		        });
 		        // console log
 		        console.log('objstore store get (log): write - ', filefqn);
 		    } else {
