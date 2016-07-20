@@ -31,6 +31,7 @@ module.exports = function(RED) {
         this.filename = n.filename;
         this.mode = n.mode;
         this.fileformat = n.fileformat;
+        this.filepath = n.filepath;
         this.objectmode = n.objectmode;
         this.objectname = n.objectname;
         this.container = n.container;
@@ -84,7 +85,7 @@ module.exports = function(RED) {
          		if (node.mode) {
          			mode = node.mode;
          		} else {
-         			mode = "0";
+         			mode = "1";
          		}
          	}
 
@@ -122,7 +123,7 @@ module.exports = function(RED) {
          	}
 
          	// Set FQN for this file
-     		filefqn = filepath + filename;
+     		filefqn = filepath + '/' + filename;
 
          	// Check objectmode
          	if ((msg.objectmode) && (msg.objectmode.trim() !== "")) {
@@ -168,7 +169,7 @@ module.exports = function(RED) {
 	        if (mode == "0") {
 	        	// Upload from File 
 		        var readStream = fs.createReadStream(filefqn);
-
+		        
 		        // get Filesize
 		        var stats = fs.statSync(filefqn);
 		        var fileSizeInBytes = stats['size'];
