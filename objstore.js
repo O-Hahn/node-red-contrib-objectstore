@@ -331,27 +331,38 @@ module.exports = function(RED) {
      		
          	// mode is buffermode or filebased
 	        if (mode == "0") {
-	        	// Upload from File 
-		        var readStream = fs.createReadStream(filefqn);
-		        
-		        // get Filesize
-		        var stats = fs.statSync(filefqn);
-		        var fileSizeInBytes = stats['size'];
-		        
-		        var sess = os.createContainer();
-		        sess.then(function() {
-		        	return os.setContainerPublicReadable();
-		        })
-		        .then(function() {
-		        	return os.uploadFile(objectname, mimetype, readStream, fileSizeInBytes);
-		        })
-		        .then(function(url){
-		          console.log('objstore store put (log): Url to uploaded file:', url);
-		          msg.url = url;
-		        });
+	        	// check if file exists
+	            var fileExists = fs.readFile( filefqn, function( err, data ) {
+	            	if(err) {
+	            		if( err.code === 'ENOENT') { return false; }
+	            		if( err.code === 'EACCES' ) { return false; }
+	            	}
+        	      return true;
+	            } );
 
-		        // console log
-		        console.log('objstore store put (log): write - ', filefqn);
+	            if (fileExists) {	            	
+		        	// Upload from File 
+			        var readStream = fs.createReadStream(filefqn);
+			        
+			        // get Filesize
+			        var stats = fs.statSync(filefqn);
+			        var fileSizeInBytes = stats['size'];
+			        
+			        var sess = os.createContainer();
+			        sess.then(function() {
+			        	return os.setContainerPublicReadable();
+			        })
+			        .then(function() {
+			        	return os.uploadFile(objectname, mimetype, readStream, fileSizeInBytes);
+			        })
+			        .then(function(url){
+			          console.log('objstore store put (log): Url to uploaded file:', url);
+			          msg.url = url;
+			        });
+
+			        // console log
+			        console.log('objstore store put (log): write - ', filefqn);
+	            }
 		    } else {
 				// store the obj directly from msg.payload
 				var buf = new Buffer(msg.payload, "binary");	 
@@ -477,7 +488,7 @@ module.exports = function(RED) {
 		// check the cfgtype
 		this.cfgtype = n.cfgtype;
 
-		if (cfgtype == 'bluemix') {
+		if (this.cfgtype == 'bluemix') {
 			// get the VCAP_SERVICES
 			var vcapServices = require('./lib/vcap');
 			console.log('VCAP: ', vcapServices);
