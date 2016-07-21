@@ -44,7 +44,7 @@ module.exports = function(RED) {
         // Check if the Config to the Service is given 
         if (this.osconfig) {
             // Do something with:
-         	node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
+         	node.status({fill:"green",shape:"ring",text:"ready"});
         } else {
             // No config node configured
 	        node.status({fill:"red",shape:"ring",text:"error"});
@@ -72,7 +72,7 @@ module.exports = function(RED) {
 	        console.log('ObjectStorage Get (log): Init done');
 
 	        // Set the status to green
-         	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+         	node.status({fill:"green",shape:"dot",text:"connected"});
          	
 			// Check mode
          	if ((msg.mode) && (msg.mode.trim() !== "")) {
@@ -170,7 +170,7 @@ module.exports = function(RED) {
 	        }
 	        
 	        // Set the node-status
-	        node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
+	        node.status({fill:"green",shape:"ring",text:"ready"});
 
 	        // Send the output back 
             node.send(msg);
@@ -209,7 +209,7 @@ module.exports = function(RED) {
         // Check if the Config to the Service is given 
         if (this.osconfig) {
             // Do something with:
-         	node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
+         	node.status({fill:"green",shape:"ring",text:"ready"});
         } else {
             // No config node configured
 	        node.status({fill:"red",shape:"ring",text:"error"});
@@ -237,7 +237,7 @@ module.exports = function(RED) {
 			var mimetype;
 
 	        // Set the status to green
-         	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});
+         	node.status({fill:"green",shape:"dot",text:"connected"});
          	
 			// Check mode
          	if ((msg.mode) && (msg.mode.trim() !== "")) {
@@ -250,6 +250,17 @@ module.exports = function(RED) {
          		}
          	}
 
+         	// Check fileformat
+         	if ((msg.fileformat) && (msg.fileformat.trim() !== "")) {
+         		fileformat = msg.fileformat;
+         	} else {
+         		if (node.fileformat) {
+         			fileformat = node.fileformat;
+         		} else {
+         			fileformat = "jpeg";
+         		}
+         	}
+
          	// Check Filename
          	if ((msg.filename) && (msg.filename.trim() !== "")) {
          		filename = msg.filename;
@@ -257,7 +268,11 @@ module.exports = function(RED) {
          		if (node.filename) {
          			filename = node.filename;
          		} else {
-         			filename = "pic_" + uuid;
+         			if (fileformat == 'jpeg') {
+         				filename = "pic_" + uuid + '.jpg';         				
+         			} else {
+         				filename = "pic_" + uuid + '.' + fileformat;         				         				
+         			}
          		}
          	}
 
@@ -269,17 +284,6 @@ module.exports = function(RED) {
          			filepath = node.filepath;
          		} else {
          			filepath = localdir;
-         		}
-         	}
-
-         	// Check fileformat
-         	if ((msg.fileformat) && (msg.fileformat.trim() !== "")) {
-         		fileformat = msg.fileformat;
-         	} else {
-         		if (node.fileformat) {
-         			fileformat = node.fileformat;
-         		} else {
-         			fileformat = "jpeg";
          		}
          	}
          	
@@ -302,7 +306,7 @@ module.exports = function(RED) {
          	if (objectmode == "0") {
      			objectname = filename;
          	} else if (objectmode == "1") {
-     			objectname = "pic_" + uuid;         		         		
+     			objectname = "pic_" + uuid + '.jpg';         		         		
          	} else {
              	if ((msg.objectname) && (msg.objectname.trim() !== "")) {
              		objectname = msg.objectname;
@@ -310,7 +314,7 @@ module.exports = function(RED) {
              		if (node.objectname) {
              			objectname = node.objectname;
              		} else {
-             			objectname = "pic_" + uuid;
+             			objectname = "pic_" + uuid + '.jpg';
              		}
              	}
          	}
@@ -375,7 +379,7 @@ module.exports = function(RED) {
 	        msg.filefqn = filefqn;
 
 	        // Set the node-status
-	        node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
+	        node.status({fill:"green",shape:"ring",text:"ready"});
 	        
             // Send the output back 
             node.send(msg);
@@ -409,7 +413,7 @@ module.exports = function(RED) {
         // Check if the Config to the Service is given 
         if (this.osconfig) {
             // Do something with:
-         	node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
+         	node.status({fill:"green",shape:"ring",text:"ready"});
         } else {
             // No config node configured
 	        node.status({fill:"red",shape:"ring",text:"error"});
@@ -426,7 +430,7 @@ module.exports = function(RED) {
 			var container;
 
 	        // Set the status to green
-         	node.status({fill:"green",shape:"dot",text:"node-red:common.status.connected"});         	
+         	node.status({fill:"green",shape:"dot",text:"connected"});         	
          	
  			// Check container
          	if ((msg.container) && (msg.container.trim() !== "")) {
@@ -452,7 +456,7 @@ module.exports = function(RED) {
 	        	console.log('Object Storage Del (log): file deleted:', objectname);
 	        });
 
-         	node.status({fill:"green",shape:"ring",text:"node-red:common.status.ready"});
+         	node.status({fill:"green",shape:"ring",text:"ready"});
 
          	// console log
 	        
@@ -483,6 +487,7 @@ module.exports = function(RED) {
 			console.log('VCAP: ', vcapServices);
 			var osCred = vcapServices.Object-Storage.credentials;
 			
+			// Get them
 			this.region = osCred.region;
 			this.userId = osCred.userId;
 			this.tendantId = osCred.tendantId;
