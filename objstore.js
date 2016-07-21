@@ -142,7 +142,16 @@ module.exports = function(RED) {
 		    		        fs.writeFileSync(filefqn, r.body, opt);
 		    		        msg.payload = filefqn;
 		    		        msg.objectname = objectname;
+		    		        
+		    		        // Set the node-status
+		    		        node.status({fill:"green",shape:"ring",text:"ready"});
+
+		    		        // Send the output back 
+		    	            node.send(msg);
 		        		});
+		        	} else {
+	    		        // Send error back 
+	    	            node.error("objstore store get (err): Object not found", msg);	        		
 		        	}
 		        });
 		        
@@ -161,19 +170,21 @@ module.exports = function(RED) {
 		        			msg.objectname = objectname;
 		    		        msg.payload = r.body;
 		    		        console.log('objectstore get (log): object loaded');
+		    		        
+		    		        // Set the node-status
+		    		        node.status({fill:"green",shape:"ring",text:"ready"});
+
+		    		        // Send the output back 
+		    	            node.send(msg);
 		        		});
+		        	} else {
+	    		        // Send error back 
+	    	            node.error("objstore store get (err): Object not found", msg);	        		
 		        	}
-		        });
-		        
+		        });		        
 		        // console log
 		        console.log('objstore store get (log): write into msg.payload');
 	        }
-	        
-	        // Set the node-status
-	        node.status({fill:"green",shape:"ring",text:"ready"});
-
-	        // Send the output back 
-            node.send(msg);
         });
 
         // respond to close....
@@ -350,8 +361,19 @@ module.exports = function(RED) {
 		        	return os.uploadFile(objectname, mimetype, readStream, fileSizeInBytes);
 		        })
 		        .then(function(url){
-		          console.log('objstore store put (log): Url to uploaded file:', url);
-		          msg.url = url;
+			        console.log('objstore store put (log): Url to uploaded file:', url);
+
+			        // Provide the needed Feedback
+			        msg.payload = msg.file;
+			        msg.objectname = objectname;
+			        msg.filefqn = filefqn;
+			        msg.url = url;
+	
+			        // Set the node-status
+			        node.status({fill:"green",shape:"ring",text:"ready"});
+			        
+		            // Send the output back 
+		            node.send(msg);
 		        });
 
 		        // console log
@@ -368,21 +390,21 @@ module.exports = function(RED) {
 					return os.uploadFile(objectname, mimetype, buf, buf.length);
 				})
 				.then(function(url){
-					msg.url = url;
 					console.log('objstore store put (log): Url to uploaded file:', url);
+
+					// Provide the needed Feedback
+			        msg.payload = msg.file;
+			        msg.objectname = objectname;
+			        msg.filefqn = filefqn;
+					msg.url = url;
+
+			        // Set the node-status
+			        node.status({fill:"green",shape:"ring",text:"ready"});
+			        
+		            // Send the output back 
+		            node.send(msg);
 				});
 	        }
-	        
-	        // Provide the needed Feedback
-	        msg.payload = msg.file;
-	        msg.objectname = objectname;
-	        msg.filefqn = filefqn;
-
-	        // Set the node-status
-	        node.status({fill:"green",shape:"ring",text:"ready"});
-	        
-            // Send the output back 
-            node.send(msg);
         });
 
         // respond to close....
