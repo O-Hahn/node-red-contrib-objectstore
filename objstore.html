@@ -116,6 +116,13 @@
             <option value="1">Buffer</option>
         </select>
     </div>
+    <div id="mode" class="form-row">
+        <label for="node-input-type"><i class="fa fa-fileo"></i> Type</label>
+        <select id="node-input-type">
+            <option value="0">Image</option>
+            <option value="1">Audio</option>
+        </select>
+    </div>
     <div id="filename" class="form-row">
         <label for="node-input-filename"><i class="fa fa-fileo"></i> Filename</label>
         <input type="text" id="node-input-filename" placeholder="Filename with extension">
@@ -124,9 +131,9 @@
         <label for="node-input-filepath"><i class="fa fa-fileo"></i> Filepath</label>
         <input type="text" id="node-input-filepath" placeholder="Path to File">
     </div>
-    <div id="fileformat" class="form-row node-input-fileformat">
-		<label for="node-input-fileformat"><i class="fa fa-file-image-o"></i> </label>
-		<select id="node-input-fileformat">
+    <div id="imageformat" class="form-row node-input-imageformat">
+		<label for="node-input-imageformat"><i class="fa fa-file-image-o"></i> </label>
+		<select id="node-input-imageformat">
 			<option value="jpeg">JPEG</option>
 			<option value="png">PNG</option>
 			<option value="gif">GIF</option>
@@ -136,6 +143,13 @@
 			<option value="rgba">RGBA</option>
 			<option value="bgr">BGR</option>
 			<option value="bgra">BGRA</option>
+        </select>
+    </div>
+    <div id="audioformat" class="form-row node-input-audioformat">
+		<label for="node-input-audioformat"><i class="fa fa-file-image-o"></i> </label>
+		<select id="node-input-audioformat">
+			<option value="wav">WAV</option>
+			<option value="mpeg">MP3</option>
         </select>
     </div>
     <div id="objectmode" class="form-row">
@@ -179,9 +193,11 @@
             container: {value:"", required:true},
             objectname: {value:"", required:false},
             objectmode: {value:"0", required:true},
-            fileformat: {value:"jpeg", required:true},
+            imageformat: {value:"jpeg", required:false},
+            audioformat: {value:"wav", required:false},
             filepath: {value:"", required:false},
             filename: {value:"", required:false},
+            type: {value:"0", required:true},
             mode: {value:"0", required:true},
             osconfig: {value:"", type:"os-config", required:true}
         },
@@ -199,6 +215,17 @@
                 } else {
                 	$("#filename").hide();
                 	$("#filepath").hide();
+                }
+            });
+            $("#node-input-type").change(function() {
+                var choose = $("#node-input-type").val();
+                console.log(choose);
+                if (choose == "0") {
+                	$("#imageformat").show();
+                	$("#audioformat").hide();
+                } else {
+                	$("#imageformat").hide();
+                	$("#audioformat").show();
                 }
             });
             $("#node-input-objectmode").change(function() {

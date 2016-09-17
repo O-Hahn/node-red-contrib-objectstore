@@ -204,7 +204,9 @@ module.exports = function(RED) {
         // Store local copies of the node configuration (as defined in the .html)
         this.filename = n.filename;
         this.mode = n.mode;
-        this.fileformat = n.fileformat;
+        this.type = n.type;
+        this.audioformat = n.audioformat;
+        this.imageformat = n.imageformat;
         this.filepath = n.filepath;
         this.objectmode = n.objectmode;
         this.objectname = n.objectname;
@@ -238,8 +240,11 @@ module.exports = function(RED) {
         	var uuid = require('node-uuid').v4();
 
          	var mode;
+         	var type;
 			var filename;
 			var filepath;
+			var audioformat;
+			var imageformat;
 			var fileformat;
 			var objectname; 
 			var filefqn;
@@ -261,14 +266,32 @@ module.exports = function(RED) {
          		}
          	}
 
-         	// Check fileformat
-         	if ((msg.fileformat) && (msg.fileformat.trim() !== "")) {
-         		fileformat = msg.fileformat;
-         	} else {
-         		if (node.fileformat) {
-         			fileformat = node.fileformat;
-         		} else {
-         			fileformat = "jpeg";
+         	// Check if audio or file to set right format
+         	if ((msg.type) && (msg.type.trim() !== "")) {
+         		if (type == "0") {         			
+                 	// Check fileformat
+                 	if ((msg.imageformat) && (msg.imageformat.trim() !== "")) {
+                 		imageformat = msg.imageformat;
+                 	} else {
+                 		if (node.imageformat) {
+                 			imageformat = node.imageformat;
+                 		} else {
+                 			imageformat = "jpeg";
+                 		}
+                 	}
+                 	fileformat = imageformat;
+         		} else {         			
+                 	// Check audioformat
+                 	if ((msg.audioformat) && (msg.audioformat.trim() !== "")) {
+                 		audioformat = msg.audioformat;
+                 	} else {
+                 		if (node.audioformat) {
+                 			audioformat = node.audioformat;
+                 		} else {
+                 			audioformat = "jpeg";
+                 		}
+                 	}
+                 	fileformat = audioformat;
          		}
          	}
 
@@ -299,7 +322,11 @@ module.exports = function(RED) {
          	}
          	
          	// Set the right mime-format
-         	mimetype = 'image/' + fileformat;
+         	if (type == "0") {         		
+             	mimetype = 'image/' + fileformat;
+         	} else {
+             	mimetype = 'audio/' + fileformat;
+         	}
 
          	// Set FQN for this file
      		filefqn = filepath  + filename;
@@ -317,7 +344,11 @@ module.exports = function(RED) {
          	if (objectmode == "0") {
      			objectname = filename;
          	} else if (objectmode == "1") {
-     			objectname = "pic_" + uuid + '.jpg';         		         		
+         		if (type == "0") {
+         			objectname = "pic_" + uuid + '.jpg';         		         		         			
+         		} else {
+         			objectname = "audio_" + uuid + '.wav';         		         		
+         		}
          	} else {
              	if ((msg.objectname) && (msg.objectname.trim() !== "")) {
              		objectname = msg.objectname;
@@ -325,7 +356,11 @@ module.exports = function(RED) {
              		if (node.objectname) {
              			objectname = node.objectname;
              		} else {
-             			objectname = "pic_" + uuid + '.jpg';
+             			if (type == "0") {
+                 			objectname = "imgage_" + uuid + '.jpg';             				
+             			} else {
+                 			objectname = "audio_" + uuid + '.wav';
+             			}
              		}
              	}
          	}
@@ -337,7 +372,11 @@ module.exports = function(RED) {
          		if (node.container) {
          			container = node.container;
          		} else {
-         			container = "Pictures";
+         			if (type == "0") {
+             			container = "Image";         				
+         			} else {
+             			container = "Audio";         				
+         			}
          		}
          	}
          	
