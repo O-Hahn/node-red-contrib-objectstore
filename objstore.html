@@ -116,9 +116,9 @@
             <option value="1">Buffer</option>
         </select>
     </div>
-    <div id="mode" class="form-row">
-        <label for="node-input-type"><i class="fa fa-fileo"></i> Type</label>
-        <select id="node-input-type">
+    <div id="formattype" class="form-row">
+        <label for="node-input-formattype"><i class="fa fa-fileo"></i> Type</label>
+        <select id="node-input-formattype">
             <option value="0">Image</option>
             <option value="1">Audio</option>
         </select>
@@ -197,7 +197,7 @@
             audioformat: {value:"wav", required:false},
             filepath: {value:"", required:false},
             filename: {value:"", required:false},
-            type: {value:"0", required:true},
+            formattype: {value:"0", required:true},
             mode: {value:"0", required:true},
             osconfig: {value:"", type:"os-config", required:true}
         },
@@ -217,8 +217,8 @@
                 	$("#filepath").hide();
                 }
             });
-            $("#node-input-type").change(function() {
-                var choose = $("#node-input-type").val();
+            $("#node-input-formattype").change(function() {
+                var choose = $("#node-input-formattype").val();
                 console.log(choose);
                 if (choose == "0") {
                 	$("#imageformat").show();

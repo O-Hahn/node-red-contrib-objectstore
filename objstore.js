@@ -204,7 +204,7 @@ module.exports = function(RED) {
         // Store local copies of the node configuration (as defined in the .html)
         this.filename = n.filename;
         this.mode = n.mode;
-        this.type = n.type;
+        this.formattype = n.formattype;
         this.audioformat = n.audioformat;
         this.imageformat = n.imageformat;
         this.filepath = n.filepath;
@@ -240,7 +240,7 @@ module.exports = function(RED) {
         	var uuid = require('node-uuid').v4();
 
          	var mode;
-         	var type;
+         	var formattype;
 			var filename;
 			var filepath;
 			var audioformat;
@@ -267,8 +267,8 @@ module.exports = function(RED) {
          	}
 
          	// Check if audio or file to set right format
-         	if ((msg.type) && (msg.type.trim() !== "")) {
-         		if (type == "0") {         			
+         	if ((msg.formattype) && (msg.formattype.trim() !== "")) {
+         		if (formattype == "0") {         			
                  	// Check fileformat
                  	if ((msg.imageformat) && (msg.imageformat.trim() !== "")) {
                  		imageformat = msg.imageformat;
@@ -322,7 +322,7 @@ module.exports = function(RED) {
          	}
          	
          	// Set the right mime-format
-         	if (type == "0") {         		
+         	if (formattype == "0") {         		
              	mimetype = 'image/' + fileformat;
          	} else {
              	mimetype = 'audio/' + fileformat;
@@ -344,7 +344,7 @@ module.exports = function(RED) {
          	if (objectmode == "0") {
      			objectname = filename;
          	} else if (objectmode == "1") {
-         		if (type == "0") {
+         		if (formattype == "0") {
          			objectname = "pic_" + uuid + '.jpg';         		         		         			
          		} else {
          			objectname = "audio_" + uuid + '.wav';         		         		
@@ -356,7 +356,7 @@ module.exports = function(RED) {
              		if (node.objectname) {
              			objectname = node.objectname;
              		} else {
-             			if (type == "0") {
+             			if (formattype == "0") {
                  			objectname = "imgage_" + uuid + '.jpg';             				
              			} else {
                  			objectname = "audio_" + uuid + '.wav';
@@ -372,7 +372,7 @@ module.exports = function(RED) {
          		if (node.container) {
          			container = node.container;
          		} else {
-         			if (type == "0") {
+         			if (formattype == "0") {
              			container = "Image";         				
          			} else {
              			container = "Audio";         				
