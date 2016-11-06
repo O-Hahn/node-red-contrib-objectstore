@@ -48,7 +48,7 @@ module.exports = function(RED) {
         } else {
             // No config node configured
 	        node.status({fill:"red",shape:"ring",text:"error"});
-	        node.error('Object Storage Put (err): No object stroage configuration found!');
+	        node.error('Object Storage Put (err): No object storage configuration found!');
 	        return;
         }
 
@@ -164,7 +164,7 @@ module.exports = function(RED) {
 	        	// If File exists with objectname - write to file the content 
 		        var sess = os.existsFile(objectname);
 		        sess.then(function(r) {
-		        	if (ret === true) {
+		            if (r === true) {
 		        		var getsess = os.downloadFileFromContainer(objectname);
 		        		getsess.then(function (r) {
 		        			msg.objectname = objectname;
@@ -226,7 +226,7 @@ module.exports = function(RED) {
         } else {
             // No config node configured
 	        node.status({fill:"red",shape:"ring",text:"error"});
-	        node.error('Object Storage Put (err): No object stroage configuration found!');
+	        node.error('Object Storage Put (err): No object storage configuration found!');
 	        return;
         }
 
@@ -478,7 +478,7 @@ module.exports = function(RED) {
         } else {
             // No config node configured
 	        node.status({fill:"red",shape:"ring",text:"error"});
-	        node.error('Object Storage Del (err): No object stroage configuration found!');
+	        node.error('Object Storage Del (err): No object storage configuration found!');
 	        return;
         }
 
@@ -493,6 +493,13 @@ module.exports = function(RED) {
 	        // Set the status to green
          	node.status({fill:"green",shape:"dot",text:"connected"});         	
          	
+                // Check ObjectName
+                if ((msg.objectname) && (msg.objectname.trim() !== "")) {
+	            objectname = msg.objectname;
+                } else {
+	            objectname = node.objectname;
+                }
+
  			// Check container
          	if ((msg.container) && (msg.container.trim() !== "")) {
          		container = msg.container;
