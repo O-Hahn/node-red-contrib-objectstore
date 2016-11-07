@@ -133,7 +133,7 @@ module.exports = function(RED) {
 		        var sess = os.existsFile(objectname);
 		        sess.then(function(r) {
 		        	if (r === true) {
-		        		var getsess = os.downloadFileFromContainer(objectname);
+				        var getsess = os.downloadFile(objectname);
 		        		getsess.then(function (r) {
 		    	        	// Download into new File 
 		    		        var opt = {
@@ -165,7 +165,7 @@ module.exports = function(RED) {
 		        var sess = os.existsFile(objectname);
 		        sess.then(function(r) {
 		            if (r === true) {
-		        		var getsess = os.downloadFileFromContainer(objectname);
+                                        var getsess = os.downloadFile(objectname);
 		        		getsess.then(function (r) {
 		        			msg.objectname = objectname;
 		    		        msg.payload = r.body;
