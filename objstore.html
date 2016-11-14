@@ -56,10 +56,10 @@
 
 <!-- Next, some simple help text is provided for the node.                   -->
 <script type="text/x-red" data-help-name="os-get">
-	<p>This <b>Object Storage Get Node</b> gets the image to the Object Storeage Service on Bluemix. </p>
-	<p>Provide in <b>msg.objectname</b> the name of the stored object in the Object Storage Service. </p>
-	<p>The <b>msg.mode</b> indicates to store the image in the <b>msg.payload</b> or into the given filename and path. </p>
-	<p>You can override the node-defaults by giving <b>msg.filename</b>, <b>msg.filepath</b> and <b>msg.fileformat</b> with the necessary informations.</p>
+	<p>This <b>Object Storage Get Node</b> gets the image from the Object Storage Service on Bluemix. </p>
+	<p>Provide in <b>msg.objectname</b> the name of the stored object in the Object Storage Service and in <b>msg.container</b> the container it resides in.</p>
+	<p>The <b>msg.mode</b> indicates to store the image in the <b>msg.payload</b> (mode=0) or into the given filename and path (mode=1). </p>
+	<p>You can override the node-defaults by giving <b>msg.filename</b> and <b>msg.filepath</b> with the necessary informations.</p>
 	<p>The node returns <b>msg.payload</b> and the <b>msg.objectname</b> name of the object. </p>
 </script>
 
@@ -179,8 +179,8 @@
 
 <!-- Next, some simple help text is provided for the node.                   -->
 <script type="text/x-red" data-help-name="os-put">
-	<p>This <b>Object Storage Put Node</b> sends the image to the Object Storeage Service on Bluemix. </p>
-	<p>The <b>msg.mode</b> indecates if the <b>msg.payload</b> contains the raw image or only the trigger for the image </p>
+	<p>This <b>Object Storage Put Node</b> sends the image to the Object Storage Service on Bluemix. </p>
+	<p>The <b>msg.mode</b> indicates if the <b>msg.payload</b> contains the raw image or only the trigger for the image </p>
 	<p>You can override the node-defaults by giving <b>msg.filename</b>, <b>msg.filepath</b> and <b>msg.fileformat</b> with the necessary informations.</p>
 	<p>The node returns <b>msg.payload</b> with the link to the Object. </p>
 </script>
@@ -273,7 +273,7 @@
 
 <!-- Next, some simple help text is provided for the node.                   -->
 <script type="text/x-red" data-help-name="os-del">
-	<p>This <b>Object Storage Del Node</b> deletes the image from the Object Storeage Service on Bluemix. </p>
+	<p>This <b>Object Storage Del Node</b> deletes the image from the Object Storage Service on Bluemix. </p>
 	<p>Provide in <b>msg.objectname</b> the name of the stored object in the Object Storage Service. </p>
 </script>
 
