@@ -9,18 +9,19 @@ Run the following command in the root directory of your Node-RED install or home
 ```sh
         npm install node-red-contrib-objectstore
 ```
+This node was tested under Nodejs V4.x LTS and NPM 2.x on NodeRed.
 
 ## Usage
 -----
 
 Provides a few nodes to easily manage the containers and objects for the <a href="http://bluemix.net" target="_new">IBM Bluemix</a> Object Storage service.
-Your can specify the credentials from the Service if you run local on a device (e.g. Raspberry Pi with the provided credentials) or it will use the VCAP_SERVICES.
+Your can specify the credentials from the Service if you run local on a device (e.g. Raspberry Pi with the provided credentials) or it will use the VCAP_SERVICES on Bluemix.
 
 There are two regions (access points) supported: 
 - https://dal.objectstorage.open.softlayer.com
 - https://lon.objectstorage.open.softlayer.com
 
-This node helps to deliver images (up to 5MB) as a payload via the REST API Interface of Swift. 
+This node helps to deliver images and audio files as a payload (up to 5MB) via the REST API Interface of Swift. 
 
 ### Object Storage Put
 

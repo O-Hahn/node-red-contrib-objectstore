@@ -125,7 +125,7 @@ module.exports = function(RED) {
          	}
          	
      		// Enable the Object Storage Service Call
-     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container, node.osconfig.region);
+     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.projectId, container, node.osconfig.region);
 
          	// mode is buffermode or filebased
 	        if (mode == "0") {
@@ -165,7 +165,7 @@ module.exports = function(RED) {
 		        var sess = os.existsFile(objectname);
 		        sess.then(function(r) {
 		            if (r === true) {
-                                        var getsess = os.downloadFile(objectname);
+						var getsess = os.downloadFile(objectname);
 		        		getsess.then(function (r) {
 		        			msg.objectname = objectname;
 		    		        msg.payload = r.body;
@@ -288,7 +288,7 @@ module.exports = function(RED) {
                  		if (node.audioformat) {
                  			audioformat = node.audioformat;
                  		} else {
-                 			audioformat = "jpeg";
+                 			audioformat = "wav";
                  		}
                  	}
                  	fileformat = audioformat;
@@ -302,11 +302,15 @@ module.exports = function(RED) {
          		if (node.filename) {
          			filename = node.filename;
          		} else {
-         			if (fileformat == 'jpeg') {
-         				filename = "pic_" + uuid + '.jpg';         				
-         			} else {
-         				filename = "pic_" + uuid + '.' + fileformat;         				         				
-         			}
+					if (formattype == "0") { 
+						if (fileformat == 'jpeg') {
+							filename = "pic_" + uuid + '.jpg';         				
+						} else {
+							filename = "pic_" + uuid + '.' + fileformat;         				         				
+						}
+					} else {
+						filename = "audio_" + uuid + '.' + fileformat;         				         										
+					}
          		}
          	}
 
@@ -381,7 +385,7 @@ module.exports = function(RED) {
          	}
          	
      		// Enable the Object Storage Service Call
-     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container, node.osconfig.region);
+     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.projectId, container, node.osconfig.region);
      		
          	// mode is buffermode or filebased
 	        if (mode == "0") {
@@ -512,7 +516,7 @@ module.exports = function(RED) {
          	}
          	
      		// Enable the Object Storage Service Call
-     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.tendantId, container, node.osconfig.region);
+     		var os = new ObjectStore(node.osconfig.userId, node.osconfig.password, node.osconfig.projectId, container, node.osconfig.region);
      		
 		    // Delete the file if exists    
 	        var sess = os.existsFile(objectname);
@@ -558,14 +562,14 @@ module.exports = function(RED) {
 			// Get them
 			this.region = osCred.region;
 			this.userId = osCred.userId;
-			this.tendantId = osCred.tendantId;
+			this.projectId = osCred.projectId;
 			this.userName = osCred.userName;
 			this.password = osCred.password;		
 		} else {			
 			// Store local copies of the node configuration (as defined in the .html)
 			this.region = n.region;
 			this.userId = n.userId;
-			this.tendantId = n.tendantId;
+			this.projectId = n.projectId;
 			this.userName = n.userName;
 			this.password = n.password;		
 		}

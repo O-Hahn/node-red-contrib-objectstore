@@ -149,6 +149,7 @@
 		<label for="node-input-audioformat"><i class="fa fa-file-image-o"></i> </label>
 		<select id="node-input-audioformat">
 			<option value="wav">WAV</option>
+			<option value="ogg">OGG</option>
 			<option value="mpeg">MP3</option>
         </select>
     </div>
@@ -317,9 +318,9 @@
             <option value="london">London</option>
         </select>
     </div>
-    <div id="tendantId" class="form-row">
-        <label for="node-config-input-tendantId"><i class="fa fa-users"></i> Tendant Id</label>
-        <input type="text" id="node-config-input-tendantId" placeholder="TendantId">
+    <div id="projectId" class="form-row">
+        <label for="node-config-input-projectId"><i class="fa fa-users"></i> Tendant Id</label>
+        <input type="text" id="node-config-input-projectId" placeholder="ProjectId">
     </div>
     <div id="userId" class="form-row">
         <label for="node-config-input-userId"><i class="fa fa-user-secret"></i> User Id</label>
@@ -345,7 +346,7 @@
         defaults: {
             cfgtype: {value:"api",required:true},
             region: {value:"dallas",required:true},
-            tendantId: {value:"",required:true},
+            projectId: {value:"",required:true},
             userId: {value:"",required:true},
             userName: {value:"",required:true},
             password: {value:"",required:true},
@@ -357,13 +358,13 @@
                 console.log(choose);
                 if (choose == "api") {
                 	$("#region").show();
-                	$("#tendantId").show();
+                	$("#projectId").show();
                 	$("#userId").show();
                 	$("#userName").show();
                 	$("#password").show();
                 } else {
                 	$("#region").hide();
-                	$("#tendantId").hide();
+                	$("#projectId").hide();
                 	$("#userId").hide();
                 	$("#userName").hide();
                 	$("#password").hide();

@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-objectstore",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "Node-Red Nodes for IBM Bluemix Object Storage service.",
   "main": "objstore.js",
   "repository": {
@@ -21,7 +21,7 @@
      	"email": "olaf@fam-hahn.com"
   },
   "license": "Apache-2.0",
-       "node-red" : {
+  "node-red" : {
         "nodes": {
             "objstore": "objstore.js"
         	}
